@@ -120,7 +120,14 @@ final class ServerList
             return str_contains((string) $server->status->value, 'install') ? 'installing' : 'offline';
         }
 
-        return match ($server->retrieveStatus()) {
+        try {
+            $status = $server->retrieveStatus();
+        } catch (Throwable) {
+            // Wings cannot be reached: visitors see the server as offline instead of losing the whole list.
+            return 'offline';
+        }
+
+        return match ($status) {
             ContainerStatus::Running => 'online',
             ContainerStatus::Starting, ContainerStatus::Restarting => 'starting',
             ContainerStatus::Stopping => 'stopping',
