@@ -24,12 +24,13 @@
                 <div class="se-head">
                     <strong>{{ __('simplify-embed::embed.code.'.$key) }}</strong>
                     <x-filament::button
+                        type="button"
                         color="gray"
                         size="sm"
                         :icon="$key === 'page' ? 'tabler-link' : 'tabler-copy'"
-                        x-on:click="take({{ Js::from($key) }}, {{ Js::from($snippet[$key]) }})"
+                        x-on:click="take({{ \Illuminate\Support\Js::from($key) }}, {{ \Illuminate\Support\Js::from($snippet[$key]) }})"
                     >
-                        <span x-text="copied === {{ Js::from($key) }} ? {{ Js::from(__('simplify-embed::embed.code.copied')) }} : (copied === {{ Js::from($key.'-selected') }} ? {{ Js::from(__('simplify-embed::embed.code.selected')) }} : {{ Js::from(__('simplify-embed::embed.code.'.($key === 'page' ? 'copy_link' : 'copy'))) }})">
+                        <span x-text="copied === {{ \Illuminate\Support\Js::from($key) }} ? {{ \Illuminate\Support\Js::from(__('simplify-embed::embed.code.copied')) }} : (copied === {{ \Illuminate\Support\Js::from($key.'-selected') }} ? {{ \Illuminate\Support\Js::from(__('simplify-embed::embed.code.selected')) }} : {{ \Illuminate\Support\Js::from(__('simplify-embed::embed.code.'.($key === 'page' ? 'copy_link' : 'copy'))) }})">
                             {{ __('simplify-embed::embed.code.'.($key === 'page' ? 'copy_link' : 'copy')) }}
                         </span>
                     </x-filament::button>
@@ -47,7 +48,7 @@
         <div class="se-block" x-data="{ shown: false }" x-intersect.once="shown = true">
             <strong>{{ __('simplify-embed::embed.code.preview') }}</strong>
             <iframe
-                x-bind:src="shown ? {{ Js::from(str_replace('page=1', 'page=0', $snippet['page'])) }} : null"
+                x-bind:src="shown ? {{ \Illuminate\Support\Js::from(str_replace('page=1', 'page=0', $snippet['page'])) }} : null"
                 title="{{ __('simplify-embed::embed.code.preview') }}"
                 class="se-preview"
             ></iframe>
