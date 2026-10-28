@@ -1,0 +1,17 @@
+{
+    "id": "simplify-embed",
+    "name": "Simplify Embed",
+    "author": "jera",
+    "version": "1.0.0-dev",
+    "description": "Shows your game servers on any website: name, status and join address, with a script, an iframe or a status page.",
+    "category": "plugin",
+    "namespace": "Simplify\\Embed",
+    "class": "SimplifyEmbedPlugin",
+    "panels": [
+        "admin",
+        "server"
+    ],
+    "panel_version": "^1.0.0-beta38",
+    "api_version": 1,
+    "update_url": "https://hub.pelican.dev/plugins/simplify-embed/update.json"
+}
