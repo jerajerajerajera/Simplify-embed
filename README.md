@@ -16,7 +16,7 @@ Simplify's add-on list.
 ## Set up
 
 1. Install the plugin from the [Pelican Hub](https://hub.pelican.dev).
-2. In the admin area, open **Advanced → Website embed**. Tick the servers for your website and pick a style.
+2. In the admin area, open **Simplify → Website embed**. Tick the servers for your website and pick a style.
 3. Copy the code under **Code for your website** and paste it into your website.
 
 Server owners can also put their own server on the website under **Website** in the server's menu.
