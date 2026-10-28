@@ -8,11 +8,16 @@ use App\Models\Node;
 use App\Models\Role;
 use App\Models\Server;
 use App\Models\User;
+use Filament\Facades\Filament;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithAuthentication;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithSession;
 use Illuminate\Foundation\Testing\Concerns\MakesHttpRequests;
 use Illuminate\Testing\TestResponse;
+use Livewire\Livewire;
+use Simplify\Embed\Filament\Admin\Pages\EmbedSettings;
+use Simplify\Embed\Filament\Server\Pages\Website;
+use Simplify\Embed\Services\EmbedOptions;
 use Simplify\Embed\Services\EmbedServers;
 
 define('LARAVEL_START', microtime(true));
@@ -76,7 +81,33 @@ $server = Server::factory()->create([
     'name' => 'Smoke Oak',
 ]);
 $allocation->update(['server_id' => $server->id]);
+// Installed, so the server pages open; Wings is not reachable in CI, which the list shows as offline.
+$server->update(['status' => null]);
 
+// Each Filament panel adds its render hooks for the whole process when it boots, so a page of another panel can
+// then fail on a plugin it does not have. Open the server page before anything boots the admin panel.
+step('the owner opens Website on the server', function () use ($owner, $server) {
+    $url = Website::getUrl(panel: 'server', tenant: $server);
+    mustBeOk(visit($owner, $url), $url);
+});
+step('settings page renders', function () use ($admin) {
+    $url = EmbedSettings::getUrl(panel: 'admin');
+    $response = visit($admin, $url);
+    mustBeOk($response, $url);
+    must(str_contains($response->getContent(), 'simplify/embed.js'), 'the code for a website is missing');
+});
+step('the settings page saves the servers and the look', function () use ($admin, $server) {
+    Filament::setCurrentPanel(Filament::getPanel('admin'));
+    Livewire::actingAs($admin)->test(EmbedSettings::class)
+        ->set('data.servers', [$server->id])
+        ->set('data.options.style', 'dark')
+        ->set('data.options.accent', '#112233')
+        ->call('save')
+        ->assertHasNoErrors();
+    must(EmbedServers::ids() === [(int) $server->id], 'the server is not on the website');
+    must(EmbedOptions::all()['style'] === 'dark' && EmbedOptions::all()['accent'] === '#112233', 'the look is not saved');
+    EmbedServers::replace([]);
+});
 step('the public list starts empty and allows any website', function () {
     $response = visit(null, '/simplify/embed/servers.json');
     mustBeOk($response, 'servers.json');
@@ -101,6 +132,10 @@ step('the script and the iframe page load', function () {
     $page = visit(null, '/simplify/embed?page=1&style=dark&server=abc');
     mustBeOk($page, 'embed page');
     must(str_contains($page->getContent(), 'data-server="abc"'), 'the option did not reach the script');
+});
+step('another user cannot open Website on the server', function () use ($server) {
+    $url = Website::getUrl(panel: 'server', tenant: $server);
+    must(visit(User::factory()->create(), $url)->getStatusCode() !== 200, 'a stranger could open the page');
 });
 step('deleting the server takes it off the website', function () use ($server) {
     $server->delete();

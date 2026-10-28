@@ -7,9 +7,16 @@ namespace Simplify\Embed\Providers;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Simplify\Embed\Http\Controllers\EmbedController;
+use Simplify\Embed\Simplify\EmbedAddon;
 
 final class EmbedProvider extends ServiceProvider
 {
+    public function register(): void
+    {
+        // Shows the add-on inside Simplify when Simplify is installed. Tagging stores only the class name.
+        $this->app->tag([EmbedAddon::class], 'simplify.addons');
+    }
+
     public function boot(): void
     {
         // Public and read-only, without a session, so any website can show the list. These are the addresses
