@@ -35,6 +35,8 @@ final class EmbedSettings extends Page implements HasSchemas
 
     protected static string|\BackedEnum|null $navigationIcon = 'tabler-code';
 
+    protected static ?int $navigationSort = 30;
+
     protected static ?string $slug = 'simplify-embed';
 
     protected string $view = 'simplify-embed::form-page';
@@ -52,9 +54,10 @@ final class EmbedSettings extends Page implements HasSchemas
         return __('simplify-embed::embed.name');
     }
 
+    /** In the Simplify group of Pelican's menu, with the other Simplify add-ons (Simplify's ADDONS.md, "Admin menu"). */
     public static function getNavigationGroup(): ?string
     {
-        return trans('admin/dashboard.advanced');
+        return 'Simplify';
     }
 
     public function getTitle(): string|Htmlable

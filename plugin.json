@@ -2,7 +2,7 @@
     "id": "simplify-embed",
     "name": "Simplify Embed",
     "author": "jera",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Shows your game servers on any website: name, status and join address, with a script, an iframe or a status page.",
     "category": "plugin",
     "namespace": "Simplify\\Embed",
