@@ -6,6 +6,8 @@ namespace Simplify\Embed;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use Simplify\Embed\Filament\Admin\Pages\EmbedSettings;
+use Simplify\Embed\Filament\Server\Pages\Website;
 
 final class SimplifyEmbedPlugin implements Plugin
 {
@@ -16,7 +18,15 @@ final class SimplifyEmbedPlugin implements Plugin
         return self::ID;
     }
 
-    public function register(Panel $panel): void {}
+    public function register(Panel $panel): void
+    {
+        if ($panel->getId() === 'admin') {
+            $panel->pages([EmbedSettings::class]);
+        }
+        if ($panel->getId() === 'server') {
+            $panel->pages([Website::class]);
+        }
+    }
 
     public function boot(Panel $panel): void {}
 }

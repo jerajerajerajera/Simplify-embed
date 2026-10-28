@@ -13,6 +13,8 @@ use Illuminate\Foundation\Testing\Concerns\InteractsWithAuthentication;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithSession;
 use Illuminate\Foundation\Testing\Concerns\MakesHttpRequests;
 use Illuminate\Testing\TestResponse;
+use Simplify\Embed\Filament\Admin\Pages\EmbedSettings;
+use Simplify\Embed\Filament\Server\Pages\Website;
 use Simplify\Embed\Services\EmbedServers;
 
 define('LARAVEL_START', microtime(true));
@@ -77,6 +79,12 @@ $server = Server::factory()->create([
 ]);
 $allocation->update(['server_id' => $server->id]);
 
+step('settings page renders', function () use ($admin) {
+    $url = EmbedSettings::getUrl(panel: 'admin');
+    $response = visit($admin, $url);
+    mustBeOk($response, $url);
+    must(str_contains($response->getContent(), 'simplify/embed.js'), 'the code for a website is missing');
+});
 step('the public list starts empty and allows any website', function () {
     $response = visit(null, '/simplify/embed/servers.json');
     mustBeOk($response, 'servers.json');
@@ -101,6 +109,15 @@ step('the script and the iframe page load', function () {
     $page = visit(null, '/simplify/embed?page=1&style=dark&server=abc');
     mustBeOk($page, 'embed page');
     must(str_contains($page->getContent(), 'data-server="abc"'), 'the option did not reach the script');
+});
+step('the owner opens Website on the server', function () use ($owner, $server) {
+    $server->update(['status' => null]);
+    $url = Website::getUrl(panel: 'server', tenant: $server);
+    mustBeOk(visit($owner, $url), $url);
+});
+step('another user cannot open Website on the server', function () use ($server) {
+    $url = Website::getUrl(panel: 'server', tenant: $server);
+    must(visit(User::factory()->create(), $url)->getStatusCode() !== 200, 'a stranger could open the page');
 });
 step('deleting the server takes it off the website', function () use ($server) {
     $server->delete();
